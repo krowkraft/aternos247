@@ -66,10 +66,18 @@ bot.on('spawn', () => {
 
 // Handle any errors
 bot.on('error', (err) => {
-  console.log('Error:', err);
+    if (err.code === 'EPIPE') {
+        console.log('Error: write EPIPE. Reconnecting...');
+        bot.quit();  // Exit the bot gracefully
+    } else {
+        console.error('Unexpected error:', err);
+    }
 });
 
 // Handle bot disconnection
 bot.on('end', () => {
-  console.log('gay sex');
+    console.log('Bot disconnected, attempting to reconnect...');
+    setTimeout(() => {
+        bot.connect();  // Try to reconnect after a delay
+    }, 5000); // 5 seconds delay before reconnecting
 });
